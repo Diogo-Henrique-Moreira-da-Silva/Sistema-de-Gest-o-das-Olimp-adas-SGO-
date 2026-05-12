@@ -1,0 +1,64 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Organizador" as Organizador
+actor "Atleta" as Atleta
+actor "Espectador" as Espectador
+actor "Sistema" as Sistema
+
+rectangle "Sistema de Gestão das Olimpíadas (SGO)" {
+
+  usecase "HU01\nCadastrar Competição" as UC_CadastrarCompeticao
+  usecase "HU02\nDefinir Data e Horário" as UC_DefinirDataHorario
+  usecase "HU03\nAssociar Local à Competição" as UC_AssociarLocal
+  usecase "HU04\nInscrever-se em Competição" as UC_Inscrever
+  usecase "HU05\nParticipar de Várias Competições" as UC_VariasCompeticoes
+  usecase "HU06\nValidar País por Modalidade" as UC_ValidarPais
+  usecase "HU07\nVisualizar Atletas Inscritos" as UC_VisualizarAtletas
+  usecase "HU08\nAlocar Local sem Conflito" as UC_AlocarLocal
+  usecase "HU09\nVerificar Disponibilidade do Local" as UC_VerificarLocal
+  usecase "HU10\nRegistrar Resultados" as UC_RegistrarResultados
+  usecase "HU11\nRegistrar Medalhas" as UC_RegistrarMedalhas
+  usecase "HU12\nConsultar Resultados" as UC_ConsultarResultados
+  usecase "HU13\nConsultar Relatório de Medalhas" as UC_ConsultarRelatorio
+  usecase "Gerar Relatório de Medalhas" as UC_GerarRelatorio
+  usecase "HU14\nConsultar Quadro Geral de Medalhas" as UC_QuadroMedalhas
+  usecase "HU15\nGerenciar Países Participantes" as UC_GerenciarPaises
+}
+
+Organizador --> UC_CadastrarCompeticao
+Organizador --> UC_VisualizarAtletas
+Organizador --> UC_RegistrarResultados
+Organizador --> UC_QuadroMedalhas
+Organizador --> UC_GerenciarPaises
+
+Atleta --> UC_Inscrever
+Atleta --> UC_ConsultarRelatorio
+
+Espectador --> UC_ConsultarResultados
+
+Sistema --> UC_ValidarPais
+Sistema --> UC_VerificarLocal
+Sistema --> UC_GerarRelatorio
+
+UC_CadastrarCompeticao ..> UC_DefinirDataHorario : <<include>>
+UC_CadastrarCompeticao ..> UC_AssociarLocal : <<include>>
+UC_CadastrarCompeticao ..> UC_GerenciarPaises : <<include>>
+
+UC_Inscrever ..> UC_ValidarPais : <<include>>
+UC_VariasCompeticoes ..> UC_Inscrever : <<extend>>
+
+UC_AssociarLocal ..> UC_AlocarLocal : <<include>>
+UC_AlocarLocal ..> UC_VerificarLocal : <<include>>
+
+UC_RegistrarResultados ..> UC_RegistrarMedalhas : <<include>>
+
+UC_ConsultarRelatorio ..> UC_GerarRelatorio : <<include>>
+UC_GerarRelatorio ..> UC_RegistrarMedalhas : <<include>>
+
+UC_QuadroMedalhas ..> UC_ConsultarRelatorio : <<include>>
+UC_ConsultarResultados ..> UC_QuadroMedalhas : <<extend>>
+
+@enduml

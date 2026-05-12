@@ -1,0 +1,108 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class Usuario {
+  - id: Long
+  - nome: String
+  - email: String
+  - senha: String
+  + autenticar(email: String, senha: String): Boolean
+  + atualizarDados(): void
+}
+
+class Organizador {
+  - cargo: String
+  + cadastrarCompeticao(): void
+  + associarLocal(): void
+  + registrarResultado(): void
+  + consultarRelatorioMedalhas(): RelatorioMedalhas
+}
+
+class Atleta {
+  - idade: Integer
+  + inscreverEmCompeticao(competicao: Competicao): void
+  + consultarCompeticoes(): List<Competicao>
+}
+
+class Espectador {
+  - nacionalidade: String
+  + consultarResultados(): List<Resultado>
+  + consultarQuadroMedalhas(): List<RelatorioMedalhas>
+}
+
+class Pais {
+  - id: Long
+  - nome: String
+  - sigla: String
+  + adicionarAtleta(atleta: Atleta): void
+  + calcularTotalMedalhas(): Integer
+}
+
+class Local {
+  - id: Long
+  - nome: String
+  - endereco: String
+  - capacidade: Integer
+  + verificarDisponibilidade(data: Date, horario: Time): Boolean
+}
+
+class Competicao {
+  - id: Long
+  - modalidade: String
+  - data: Date
+  - horario: Time
+  + adicionarAtleta(atleta: Atleta): void
+  + removerAtleta(atleta: Atleta): void
+  + definirLocal(local: Local): void
+  + listarAtletas(): List<Atleta>
+}
+
+class Inscricao {
+  - id: Long
+  - dataInscricao: Date
+  + validarInscricao(): Boolean
+  + cancelarInscricao(): void
+}
+
+class Resultado {
+  - id: Long
+  + registrarMedalhistas(ouro: Atleta, prata: Atleta, bronze: Atleta): void
+  + obterVencedor(): Atleta
+}
+
+class RelatorioMedalhas {
+  - quantidadeOuro: Integer
+  - quantidadePrata: Integer
+  - quantidadeBronze: Integer
+  + gerarRelatorio(): void
+  + calcularRanking(): List<Pais>
+}
+
+Usuario <|-- Organizador
+Usuario <|-- Atleta
+Usuario <|-- Espectador
+
+Pais "1" -- "0..*" Atleta : representa
+
+Atleta "1" -- "0..*" Inscricao
+Competicao "1" -- "0..*" Inscricao
+
+Local "1" -- "0..*" Competicao : sedia
+
+Competicao "1" -- "0..1" Resultado : possui
+
+Resultado --> Atleta : ouro
+Resultado --> Atleta : prata
+Resultado --> Atleta : bronze
+
+Pais "1" -- "0..*" RelatorioMedalhas
+
+Organizador ..> Competicao : gerencia
+Organizador ..> Resultado : registra
+Organizador ..> RelatorioMedalhas : consulta
+
+Espectador ..> Resultado : consulta
+Espectador ..> RelatorioMedalhas : consulta
+
+@enduml

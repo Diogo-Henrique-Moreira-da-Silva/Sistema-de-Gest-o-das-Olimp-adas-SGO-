@@ -1,0 +1,220 @@
+@startuml
+top to bottom direction
+
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 120
+
+rectangle "Frontend - React / Vite" as FRONTEND {
+
+  package "pages" as FRONT_PAGES {
+
+    package "cadastro" as FRONT_CADASTRO {
+      [CadastroPage]
+    }
+
+    package "login" as FRONT_LOGIN {
+      [LoginPage]
+    }
+
+    package "home" as FRONT_HOME {
+      [HomePage]
+    }
+
+    package "competicoes" as FRONT_COMPETICOES {
+      [CompeticoesPage]
+    }
+
+    package "inscricao" as FRONT_INSCRICAO {
+      [InscricaoPage]
+    }
+
+    package "resultados" as FRONT_RESULTADOS {
+      [ResultadosPage]
+    }
+
+    package "medalhas" as FRONT_MEDALHAS {
+      [MedalhasPage]
+    }
+
+    package "locais" as FRONT_LOCAIS {
+      [LocaisPage]
+    }
+
+    package "paises" as FRONT_PAISES {
+      [PaisesPage]
+    }
+  }
+
+  package "services" as FRONT_SERVICES {
+
+    package "api" as FRONT_API {
+      [ApiClient]
+    }
+
+    package "auth" as FRONT_AUTH_SERVICE {
+      [AuthService]
+    }
+
+    package "competicao" as FRONT_COMPETICAO_SERVICE {
+      [CompeticaoServiceFront]
+    }
+
+    package "inscricao" as FRONT_INSCRICAO_SERVICE {
+      [InscricaoServiceFront]
+    }
+
+    package "resultado" as FRONT_RESULTADO_SERVICE {
+      [ResultadoServiceFront]
+    }
+
+    package "medalhas" as FRONT_MEDALHAS_SERVICE {
+      [MedalhasServiceFront]
+    }
+
+    package "local" as FRONT_LOCAL_SERVICE {
+      [LocalServiceFront]
+    }
+
+    package "pais" as FRONT_PAIS_SERVICE {
+      [PaisServiceFront]
+    }
+  }
+
+  package "context" as FRONT_CONTEXT {
+    package "authContext" as FRONT_AUTH_CONTEXT {
+      [AuthContext]
+    }
+  }
+}
+
+rectangle "Backend / API - Java Spring Boot" as BACKEND {
+
+  package "config" as BACK_CONFIG {
+    [SecurityConfig]
+    [CorsConfig]
+  }
+
+  package "usuario" as BACK_USUARIO {
+    [UsuarioEntity]
+    [UsuarioController]
+    [UsuarioService]
+    [UsuarioRepository]
+    [UsuarioDTO]
+  }
+
+  package "organizador" as BACK_ORGANIZADOR {
+    [OrganizadorEntity]
+    [OrganizadorController]
+    [OrganizadorService]
+    [OrganizadorRepository]
+    [OrganizadorDTO]
+  }
+
+  package "atleta" as BACK_ATLETA {
+    [AtletaEntity]
+    [AtletaController]
+    [AtletaService]
+    [AtletaRepository]
+    [AtletaDTO]
+  }
+
+  package "espectador" as BACK_ESPECTADOR {
+    [EspectadorEntity]
+    [EspectadorController]
+    [EspectadorService]
+    [EspectadorRepository]
+    [EspectadorDTO]
+  }
+
+  package "pais" as BACK_PAIS {
+    [PaisEntity]
+    [PaisController]
+    [PaisService]
+    [PaisRepository]
+    [PaisDTO]
+  }
+
+  package "local" as BACK_LOCAL {
+    [LocalEntity]
+    [LocalController]
+    [LocalService]
+    [LocalRepository]
+    [LocalDTO]
+  }
+
+  package "competicao" as BACK_COMPETICAO {
+    [CompeticaoEntity]
+    [CompeticaoController]
+    [CompeticaoService]
+    [CompeticaoRepository]
+    [CompeticaoDTO]
+  }
+
+  package "inscricao" as BACK_INSCRICAO {
+    [InscricaoEntity]
+    [InscricaoController]
+    [InscricaoService]
+    [InscricaoRepository]
+    [InscricaoDTO]
+  }
+
+  package "resultado" as BACK_RESULTADO {
+    [ResultadoEntity]
+    [ResultadoController]
+    [ResultadoService]
+    [ResultadoRepository]
+    [ResultadoDTO]
+  }
+
+  package "medalha" as BACK_MEDALHA {
+    [MedalhaEntity]
+    [MedalhaController]
+    [MedalhaService]
+    [MedalhaRepository]
+    [MedalhaDTO]
+  }
+
+  package "relatorio" as BACK_RELATORIO {
+    [RelatorioMedalhasDTO]
+    [RelatorioController]
+    [RelatorioService]
+  }
+}
+
+FRONTEND -down-> BACKEND : <<use>> REST API
+
+' Relações internas do Backend usando norank
+BACK_CONFIG -[norank]-> BACK_USUARIO : configura autenticação
+BACK_CONFIG -[norank]-> BACK_ORGANIZADOR : controla acesso
+BACK_CONFIG -[norank]-> BACK_ATLETA : controla acesso
+BACK_CONFIG -[norank]-> BACK_ESPECTADOR : controla acesso
+
+BACK_ORGANIZADOR -[norank]-> BACK_USUARIO : especializa usuário
+BACK_ATLETA -[norank]-> BACK_USUARIO : especializa usuário
+BACK_ESPECTADOR -[norank]-> BACK_USUARIO : especializa usuário
+
+BACK_ATLETA -[norank]-> BACK_PAIS : representa país
+
+BACK_COMPETICAO -[norank]-> BACK_LOCAL : aloca local
+BACK_COMPETICAO -[norank]-> BACK_ATLETA : possui atletas
+BACK_COMPETICAO -[norank]-> BACK_PAIS : valida país por modalidade
+
+BACK_INSCRICAO -[norank]-> BACK_ATLETA : inscreve atleta
+BACK_INSCRICAO -[norank]-> BACK_COMPETICAO : vincula competição
+
+BACK_RESULTADO -[norank]-> BACK_COMPETICAO : pertence à competição
+BACK_RESULTADO -[norank]-> BACK_ATLETA : define medalhistas
+
+BACK_MEDALHA -[norank]-> BACK_ATLETA : pertence ao atleta
+BACK_MEDALHA -[norank]-> BACK_PAIS : contabiliza por país
+BACK_MEDALHA -[norank]-> BACK_RESULTADO : gerada pelo resultado
+
+BACK_RELATORIO -[norank]-> BACK_RESULTADO : consulta resultados
+BACK_RELATORIO -[norank]-> BACK_MEDALHA : gera quadro de medalhas
+BACK_RELATORIO -[norank]-> BACK_PAIS : agrupa por país
+
+@enduml

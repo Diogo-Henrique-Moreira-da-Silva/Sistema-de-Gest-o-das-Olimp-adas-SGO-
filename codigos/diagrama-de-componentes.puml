@@ -1,0 +1,64 @@
+@startuml
+skinparam componentStyle uml2
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+left to right direction
+
+actor "NAVEGADOR" as NAV
+
+component "API" as API
+
+package "Services" {
+  component "<<SERVICE>>\nRelatorio" as RELATORIO
+  component "<<SERVICE>>\nUsuario" as USUARIO
+  component "<<SERVICE>>\nAutentificação" as AUTENTIFICACAO
+  component "<<SERVICE>>\nCompetição" as COMPETICAO
+  component "<<SERVICE>>\nInscrição" as INSCRICAO
+  component "<<SERVICE>>\nLocal" as LOCAL
+  component "<<SERVICE>>\nResultado" as RESULTADO
+  component "<<SERVICE>>\nMedalha" as MEDALHA
+  component "<<SERVICE>>\nPaís" as PAIS
+  component "<<SERVICE>>\nAtleta" as ATLETA
+  component "<<SERVICE>>\nEspectador" as ESPECTADOR
+  component "<<SERVICE>>\nOrganizador" as ORGANIZADOR
+}
+
+package "AWS - Usuários" as AWS_USUARIOS {
+  database "Postgree" as DB_USUARIOS
+}
+
+package "AWS - Eventos" as AWS_EVENTOS {
+  database "Postgree" as DB_EVENTOS
+}
+
+NAV -d0)- API : Rest
+
+API -d0)- RELATORIO : Rest
+API -d0)- USUARIO : Rest
+API -d0)- AUTENTIFICACAO : Rest
+API -d0)- COMPETICAO : Rest
+API -d0)- INSCRICAO : Rest
+API -d0)- LOCAL : Rest
+API -d0)- RESULTADO : Rest
+API -d0)- MEDALHA : Rest
+API -d0)- PAIS : Rest
+API -d0)- ATLETA : Rest
+API -d0)- ESPECTADOR : Rest
+API -d0)- ORGANIZADOR : Rest
+
+USUARIO -d0)- DB_USUARIOS : TCP/IP
+AUTENTIFICACAO -d0)- DB_USUARIOS : TCP/IP
+ATLETA -d0)- DB_USUARIOS : TCP/IP
+ESPECTADOR -d0)- DB_USUARIOS : TCP/IP
+ORGANIZADOR -d0)- DB_USUARIOS : TCP/IP
+
+RELATORIO -d0)- DB_EVENTOS : TCP/IP
+COMPETICAO -d0)- DB_EVENTOS : TCP/IP
+INSCRICAO -d0)- DB_EVENTOS : TCP/IP
+LOCAL -d0)- DB_EVENTOS : TCP/IP
+RESULTADO -d0)- DB_EVENTOS : TCP/IP
+MEDALHA -d0)- DB_EVENTOS : TCP/IP
+PAIS -d0)- DB_EVENTOS : TCP/IP
+
+@enduml

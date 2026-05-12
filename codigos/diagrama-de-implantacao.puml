@@ -1,0 +1,76 @@
+@startuml
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam nodeStyle rectangle
+
+left to right direction
+
+actor "Usuário" as USUARIO
+
+node "Dispositivo do Usuário" as DEVICE {
+  artifact "Navegador Web" as BROWSER
+}
+
+cloud "Internet" as INTERNET
+
+cloud "AWS Cloud" as AWS {
+
+  node "Route 53\nDNS" as DNS
+
+  node "VPC - Rede Privada SGO" as VPC {
+
+    node "Sub-rede Pública" as PUBLIC_SUBNET {
+
+      node "Application Load Balancer" as ALB {
+        artifact "Entrada HTTPS\nPorta 443" as HTTPS_ENTRY
+      }
+
+      node "Servidor Web\nEC2 / Nginx" as WEB_SERVER {
+        artifact "Frontend React\nHTML / CSS / JS" as FRONTEND
+      }
+    }
+
+    node "Sub-rede Privada - Aplicação" as PRIVATE_APP {
+
+      node "Servidor Backend\nEC2 / Docker" as BACK_SERVER {
+        artifact "Container API\nJava Spring Boot\nPorta 8080" as API_CONTAINER
+      }
+
+      node "Serviço de Mensageria\nAmazon SQS" as SQS {
+        artifact "Fila de Processamento" as QUEUE
+      }
+
+      node "Servidor Worker\nEC2 / Docker" as WORKER_SERVER {
+        artifact "Container Worker\nProcessamento Assíncrono" as WORKER
+      }
+    }
+
+    node "Sub-rede Privada - Dados" as PRIVATE_DB {
+
+      database "AWS RDS PostgreSQL\nBanco de Usuários" as DB_USUARIOS
+
+      database "AWS RDS PostgreSQL\nBanco de Eventos" as DB_EVENTOS
+    }
+  }
+}
+
+USUARIO --> BROWSER
+BROWSER --> INTERNET : HTTPS
+INTERNET --> DNS : Resolução de domínio
+DNS --> HTTPS_ENTRY : HTTPS
+
+HTTPS_ENTRY --> FRONTEND : entrega arquivos estáticos
+FRONTEND --> API_CONTAINER : REST / JSON
+
+API_CONTAINER --> QUEUE : TCP/IP
+QUEUE --> WORKER : TCP/IP
+
+API_CONTAINER --> DB_USUARIOS : TCP/IP
+API_CONTAINER --> DB_EVENTOS : TCP/IP
+
+WORKER --> DB_USUARIOS : TCP/IP
+WORKER --> DB_EVENTOS : TCP/IP
+
+@enduml
